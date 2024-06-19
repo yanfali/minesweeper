@@ -11,7 +11,7 @@ interface Board {
   height: number;
   width: number;
   mines: number;
-  grid: (Tile | undefined)[][];
+  grid: Tile[][];
 }
 
 /**
