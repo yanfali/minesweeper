@@ -12,6 +12,8 @@ interface Board {
   width: number;
   mines: number;
   grid: Tile[][];
+  minesMarked: number;
+  startTime: number;
 }
 
 /**
@@ -26,6 +28,8 @@ function initBoard(width: number, height: number, mines: number): Board {
     height,
     mines,
     grid: [],
+    minesMarked: 0,
+    startTime: Date.now(),
   };
   for (let x = 0; x < board.width; x++) {
     board.grid[x] = [];
@@ -41,10 +45,19 @@ function initBoard(width: number, height: number, mines: number): Board {
   return board;
 }
 
+/**
+ * Render the passed in board
+ * @param board
+ */
 function displayBoard(board: Board): void {
-  for (let x = 0; x < board.width; x++) {
-    const row = [];
-    for (let y = 0; y < board.height; y++) {
+  const cols = new Array(board.width).fill(1).map((v, i) => ` ${i + 1} `);
+  cols.unshift("   ");
+  console.log(`${cols.join("")}\n`);
+
+  // now use board to fill out state
+  for (let y = 0; y < board.height; y++) {
+    const row = [` ${y + 1} `];
+    for (let x = 0; x < board.width; x++) {
       const tile = board.grid[x][y];
       if (tile.isFlagged) {
         row.push(" F ");
@@ -60,5 +73,5 @@ function displayBoard(board: Board): void {
   }
 }
 
-const board: Board = initBoard(3, 3, 5);
+const board: Board = initBoard(6, 3, 5);
 displayBoard(board);
