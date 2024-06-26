@@ -63,8 +63,7 @@ function displayBoard(board: Board): void {
         row.push(" F ");
       } else if (tile.isVisible) {
         row.push(` ${tile.adjacentMines} `);
-      }
-      {
+      } else {
         // do nothing
         row.push(" ? ");
       }
@@ -73,5 +72,47 @@ function displayBoard(board: Board): void {
   }
 }
 
-const board: Board = initBoard(6, 3, 5);
+interface GridCoord {
+  x: number;
+  y: number;
+}
+
+/** Durstenfeld version of Fisher-Yates with O(n) performance */
+function algorithmP(positions: GridCoord[], mines: number): GridCoord[] {
+  let count = mines;
+  for (let i = positions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * i);
+    count--;
+    if (count === 0) {
+      // stop when we have this many mines placed
+      break;
+    }
+    [positions[i], positions[j]] = [positions[j], positions[i]];
+  }
+  // return only the shuffled number of elements
+  return positions.slice(positions.length - mines);
+}
+
+function placeMines(board: Board): Board {
+  const mines = board.mines;
+  // create an array of all possible coordinates
+  const gridCoord: GridCoord[] = [];
+  for (let y = board.height - 1; y >= 0; y--) {
+    for (let x = board.width - 1; x >= 0; x--) {
+      gridCoord.push({ x, y });
+    }
+  }
+
+  const randomCoords = algorithmP(gridCoord, mines);
+  for (let i = 0; i < randomCoords.length; i++) {
+    const coords = randomCoords[i];
+    board.grid[coords.x][coords.y].hasMine = true;
+    board.grid[coords.x][coords.y].isFlagged = true;
+  }
+
+  return board;
+}
+
+const board: Board = initBoard(9, 9, 50);
+placeMines(board);
 displayBoard(board);
